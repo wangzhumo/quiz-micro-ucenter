@@ -8,11 +8,19 @@ export class AccountController {
 
   @MessagePattern({ cmd: 'create_account' })
   async CreateBaseAccount(nick?: string, avatar?: string, region?: string) {
-    return this.accountService.CreateAccount(nick, avatar, region);
+    const user = this.accountService.CreateAccount(nick, avatar, region);
+    return {
+      data: user,
+      code: 0
+    };
   }
 
   @MessagePattern({ cmd: 'find_account' })
   async GetAccount(accountId: string) {
-    return this.accountService.findBaseAccount(accountId);
+    const user = await this.accountService.findBaseAccount(accountId);
+    return {
+      data: user,
+      code: 0
+    };
   }
 }

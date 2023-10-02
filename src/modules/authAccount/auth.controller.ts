@@ -14,7 +14,7 @@ export class AuthAccountController {
   }
 
   @MessagePattern({ cmd: 'auth_account' })
-  AuthAccount(authInfo: AccountAuthInfo) {
+  AuthAccount( authInfo: AccountAuthInfo) {
     return this.authService.AuthAccount(authInfo)
   }
 }

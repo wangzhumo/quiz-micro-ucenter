@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from "@nestjs/common";
 import { LoginService } from './login.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,5 +15,10 @@ export class LoginController {
       identity,
       credential,
     );
+  }
+
+  @Get('say')
+  sayHello() {
+    return "say hello."
   }
 }
