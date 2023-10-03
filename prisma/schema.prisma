@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AccountAuthInfo {
+  id           Int       @id @default(autoincrement())
+  uid          Int
+  identityType Int       @db.SmallInt
+  identity     String    @unique
+  credential   String    @db.VarChar(256)
+  tokenExpire  DateTime? @default(now()) @db.Timestamp(6)
+  token        String?   @db.VarChar(256)
+
+  @@index([uid, identity])
+}
+
+model AccountBaseInfo {
+  id        Int      @id @default(autoincrement())
+  uid       Int      @unique
+  avatar    String   @db.VarChar(256)
+  nick      String   @db.VarChar(80)
+  status    Int      @default(0) @db.SmallInt
+  region    String   @default("Global") @db.VarChar(80)
+  lastAt    DateTime @default(now()) @db.Timestamp(6)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([uid])
+}
