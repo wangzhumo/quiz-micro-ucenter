@@ -1,21 +1,19 @@
-import { MessagePattern } from "@nestjs/microservices";
-import { AccountAuthInfo } from "../accounts";
-import { Controller } from "@nestjs/common";
-import { AuthAccountService } from "./authAccount.service";
-
+import { MessagePattern } from '@nestjs/microservices'
+import { Controller } from '@nestjs/common'
+import { AuthAccountService } from './authAccount.service'
 
 @Controller()
 export class AuthAccountController {
-  constructor(private readonly authService: AuthAccountService) {}
+    constructor(private readonly authService: AuthAccountService) {}
 
-  @MessagePattern({ cmd: 'third_check' })
-  async AuthCheck(identityType: number, identity: string) {
-    const res = await this.authService.AuthCheck(identityType, identity);
-  }
+    @MessagePattern({ cmd: 'third_check' })
+    async AuthCheck(params: any) {
+        const { identityType, identity } = params
+        return this.authService.AuthCheck({identityType, identity})
+    }
 
-  @MessagePattern({ cmd: 'auth_account' })
-  AuthAccount( authInfo: AccountAuthInfo) {
-    return this.authService.AuthAccount(authInfo)
-  }
+    @MessagePattern({ cmd: 'auth_account' })
+    async AuthAccount(params: any) {
+        return this.authService.AuthAccount(params)
+    }
 }
-

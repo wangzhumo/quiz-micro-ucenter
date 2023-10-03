@@ -1,37 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { AccountModule } from './modules/account/account.module';
 import { AuthAccountModule } from './modules/authAccount/auth.module';
 import { LoginModule } from './modules/login/login.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AccountAuthInfo } from './database/entity/authAccount';
-import { AccountBaseInfo } from './database/entity/baseAccount';
-import { DataSource } from 'typeorm';
 import { WinstonModule } from "nest-winston";
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('Database.host'),
-        port: configService.get<number>('Database.port'),
-        username: configService.get<string>('Database.user'),
-        password: configService.get<string>('Database.password'),
-        database: configService.get<string>('Database.name'),
-        synchronize: true,
-        logging: true,
-        entities: [AccountAuthInfo, AccountBaseInfo],
-      }),
-      dataSourceFactory: async (options) => {
-        return await new DataSource(options).initialize();
-      },
-    }),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,

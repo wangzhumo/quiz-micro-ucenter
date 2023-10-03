@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AccountService } from "./account.service";
 import { AccountController } from "./account.controller";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { AccountBaseInfo } from "../../database/entity/baseAccount";
+import { PrismaService } from "../../database/prisma.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AccountBaseInfo])],
   controllers: [AccountController],
-  providers: [AccountService]
+  providers: [AccountService, PrismaService],
+  exports: [AccountService]
 })
 export class AccountModule {}

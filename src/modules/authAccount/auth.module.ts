@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthAccountService } from './authAccount.service'
 import { AuthAccountController } from "./auth.controller";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { AccountAuthInfo } from "../../database/entity/authAccount";
+import { AccountModule } from "../account/account.module";
+import { PrismaService } from "../../database/prisma.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AccountAuthInfo])],
+  imports: [AccountModule],
   controllers: [AuthAccountController],
-  providers: [AuthAccountService],
+  providers: [AuthAccountService, PrismaService],
   exports: [AuthAccountService]
 })
 

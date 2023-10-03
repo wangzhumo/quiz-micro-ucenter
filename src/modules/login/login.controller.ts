@@ -1,15 +1,14 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  @UseGuards(AuthGuard('local'))
   @MessagePattern({ cmd: 'login_auth' })
-  async LoginAuth(identityType: number, identity: string, credential: string) {
+  async LoginAuth(params: any) {
+    const { identityType, identity, credential } = params
     const res = await this.loginService.validateUser(
       identityType,
       identity,
@@ -17,8 +16,21 @@ export class LoginController {
     );
   }
 
-  @Get('say')
-  sayHello() {
-    return "say hello."
+  /**
+   * register new account
+   * @constructor
+   * @param params
+   */
+  @MessagePattern({ cmd: 'register' })
+  async Register(
+    params: any
+  ) {
+    const { nick,identityType,identity,credential } = params
+    return await this.loginService.registerAccount(
+      nick,
+      identityType,
+      identity,
+      credential,
+    );
   }
 }

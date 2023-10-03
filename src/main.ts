@@ -5,26 +5,16 @@ import {
   TcpOptions,
   Transport,
 } from '@nestjs/microservices';
-import 'reflect-metadata';
-import { WinstonModule } from "nest-winston";
-import { createLogger } from "winston";
 
 async function bootstrap() {
-  // createLogger of Winston
-  const instance = createLogger({
-    // options of Winston
-  });
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
       transport: Transport.TCP,
       options: {
         port: 8000,
-        host: '0.0.0.0',
-      },
-      logger: WinstonModule.createLogger({
-        instance: instance
-      })
+        host: '127.0.0.1',
+      }
     } as TcpOptions,
   );
   await app.listen();
