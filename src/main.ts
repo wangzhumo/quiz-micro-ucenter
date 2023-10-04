@@ -2,21 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
   MicroserviceOptions,
-  TcpOptions,
   Transport,
 } from '@nestjs/microservices';
+import { join } from 'path'
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+      transport: Transport.GRPC,
       options: {
-        port: 8000,
-        host: '127.0.0.1',
-      }
-    } as TcpOptions,
-  );
+          url: '0.0.0."0.0.0.0:8000"     package: 'ucen"ucenter"       protoPath: join(__dirname, '.."../_proto/ucenter.proto"     },
+  })
   await app.listen();
 }
 

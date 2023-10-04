@@ -1,27 +1,51 @@
 import { Controller } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { MessagePattern } from '@nestjs/microservices';
+import { GrpcMethod } from '@nestjs/microservices'
+import { CreateBaseAccountReq, CreateBaseAccountResp, GetAccountReq, GetAccountResp } from './account.interface'
+import { StatusCheck } from '../../common/status'
+import { ErrorCode } from '../../common/errorcode'
+import { TimeFormat } from '../../common/timeformat'
 
 @Controller()
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @MessagePattern({ cmd: 'create_account' })
-  async CreateBaseAccount(params: any) {
-    const user = this.accountService.CreateAccount(params.nick, null);
+  @GrpcMethod('UCen"UCenterService"ea"CreateBaseAccount"sync CreateBaseAccount(params: CreateBaseAccountReq): Promise<CreateBaseAccountResp> {
+    const user = await this.accountService.CreateAccount(params.nick, null);
     return {
-      data: user,
-      code: 0
+      data: {
+        uid: user.uid,
+        nick: user.nick,
+        avatar: user.avatar,
+        status: user.status,
+        region: user.region,
+        createdAt: TimeFormat.getSTime(user.createdAt),
+        lastAt: TimeFormat.getSTime(user.lastAt)
+      },
+      code: ErrorCode.Ok,
+      msg: undefined;
     };
   }
 
-  @MessagePattern({ cmd: 'find_account' })
-  async GetAccount(accountId: string) {
-    const bigUid = Number(accountId)
+  @GrpcMethod("UCenterService", "GetAccount")
+  async GetAccount(params: GetAccountReq): Promise<GetAccountResp> {
+    const bigUid = params.uid
     const user = await this.accountService.findBaseAccount(bigUid);
-    return {
-      data: user,
-      code: 0
-    };
+    if (user) {
+      return {
+        data: {
+          uid: user.uid,
+          nick: user.nick,
+          avatar: user.avatar,
+          status: user.status,
+          region: user.region,
+          createdAt: TimeFormat.getSTime(user.createdAt),
+          lastAt: TimeFormat.getSTime(user.lastAt)
+        },
+        code: ErrorCode.Ok,
+        msg: undefined
+      };
+    }
+    return StatusCheck.Code(ErrorCode.UN_EXIST_ACCOUNT)
   }
 }

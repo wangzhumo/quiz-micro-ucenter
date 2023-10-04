@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { AuthAccountService } from '../authAccount/authAccount.service'
-import { StatusCheck } from "../../common/status";
-import { ErrorCode } from "../../common/errorcode";
+import { StatusCheck } from '../../common/status'
+import { ErrorCode } from '../../common/errorcode'
 
 @Injectable()
 export class LoginService {
     constructor(private authService: AuthAccountService) {}
 
     async validateUser(identityType: number, identity: string, credential: string) {
-        const user = await this.authService.AuthCheck({identityType, identity})
+        const user = await this.authService.HasAuthAccount({ identityType, identity })
         if (user.code !== ErrorCode.Ok) {
             return StatusCheck.Code(user.code)
         }
@@ -21,23 +21,20 @@ export class LoginService {
 
     async registerAccount(nick: string, identityType: number, identity: string, credential: string) {
         // check account exist
-        const user = await this.authService.AuthCheck({identityType, identity})
-        console.log('registerAccount 1', user)
-        // save to database
-        if (user) {
+        const ret = await this.authService.HasAuthAccount({ identityType, identity }) // save to database
+        if (ret.code === ErrorCode.EXIST_ACCOUNT) {
             // already exist
-            console.log('registerAccount 2', user)
-            return Promise.reject(ErrorCode.EXIST_ACCOUNT)
-        } else {
+            return StatusCheck.Code(ErrorCode.EXIST_ACCOUNT);
+        } else if (ret.code === ErrorCode.UN_EXIST_ACCOUNT) {
             // save to database
-            const authRet = await this.authService.AuthAccount({
+            return await this.authService.AuthAccount({
                 nick,
                 identityType,
                 identity,
                 credential,
             })
-            console.log('registerAccount 3', authRet)
-            return authRet
+        } else {
+            return StatusCheck.Code(ErrorCode.Failure);
         }
     }
 }
