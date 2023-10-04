@@ -7,11 +7,17 @@ import {
 import { join } from 'path'
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
       transport: Transport.GRPC,
       options: {
-          url: '0.0.0."0.0.0.0:8000"     package: 'ucen"ucenter"       protoPath: join(__dirname, '.."../_proto/ucenter.proto"     },
-  })
+        url: '0.0.0.0:8000',
+        package: 'ucenter',
+        protoPath: join(__dirname,'../_proto/ucenter.proto'),
+      }
+    },
+  );
   await app.listen();
 }
 

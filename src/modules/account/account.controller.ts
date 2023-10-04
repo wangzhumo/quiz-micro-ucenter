@@ -1,16 +1,17 @@
 import { Controller } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { GrpcMethod } from '@nestjs/microservices'
-import { CreateBaseAccountReq, CreateBaseAccountResp, GetAccountReq, GetAccountResp } from './account.interface'
-import { StatusCheck } from '../../common/status'
-import { ErrorCode } from '../../common/errorcode'
-import { TimeFormat } from '../../common/timeformat'
+import { GrpcMethod } from "@nestjs/microservices";
+import { CreateBaseAccountReq, CreateBaseAccountResp, GetAccountReq, GetAccountResp } from "./account.interface";
+import { StatusCheck } from "../../common/status";
+import { ErrorCode } from "../../common/errorcode";
+import { TimeFormat } from "../../common/timeformat";
 
 @Controller()
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @GrpcMethod('UCen"UCenterService"ea"CreateBaseAccount"sync CreateBaseAccount(params: CreateBaseAccountReq): Promise<CreateBaseAccountResp> {
+  @GrpcMethod('UCenterService','CreateBaseAccount')
+  async CreateBaseAccount(params: CreateBaseAccountReq) : Promise<CreateBaseAccountResp> {
     const user = await this.accountService.CreateAccount(params.nick, null);
     return {
       data: {
@@ -23,11 +24,11 @@ export class AccountController {
         lastAt: TimeFormat.getSTime(user.lastAt)
       },
       code: ErrorCode.Ok,
-      msg: undefined;
+      msg: undefined
     };
   }
 
-  @GrpcMethod("UCenterService", "GetAccount")
+  @GrpcMethod('UCenterService','GetAccount')
   async GetAccount(params: GetAccountReq): Promise<GetAccountResp> {
     const bigUid = params.uid
     const user = await this.accountService.findBaseAccount(bigUid);
