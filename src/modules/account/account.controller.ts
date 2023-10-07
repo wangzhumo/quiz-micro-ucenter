@@ -30,8 +30,7 @@ export class AccountController {
 
   @GrpcMethod('UCenterService','GetAccount')
   async GetAccount(params: GetAccountReq): Promise<GetAccountResp> {
-    const bigUid = params.uid
-    const user = await this.accountService.findBaseAccount(bigUid);
+    const user = await this.accountService.findBaseAccount(params.uid.toNumber());
     if (user) {
       return {
         data: {

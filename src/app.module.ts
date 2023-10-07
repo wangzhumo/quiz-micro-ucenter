@@ -1,20 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import configuration from '../config/configuration';
 import { AccountModule } from './modules/account/account.module';
 import { AuthAccountModule } from './modules/authAccount/auth.module';
 import { LoginModule } from './modules/login/login.module';
 import { WinstonModule } from "nest-winston";
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
+import Configuration from "./configuration";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
       isGlobal: true,
-      ignoreEnvFile: false,
-      load: [configuration],
+      load: [Configuration],
     }),
     WinstonModule.forRoot({
       transports: [

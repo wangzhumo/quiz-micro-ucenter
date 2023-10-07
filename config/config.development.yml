@@ -1,0 +1,21 @@
+# Application Options
+app:
+    url: 0.0.0.0
+    port: 8000
+
+# database
+db:
+    name: ucenter
+    host: localhost
+    port: 5432
+    user: accountdb
+    password: accountpasd
+
+# prisma
+prisma:
+    url: "postgresql://accountdb:accountpasd@localhost:5432/ucenter?schema=ucenter"
+
+# proto
+protobuf:
+    package: ucenter
+    url: "0.0.0.0:8000"

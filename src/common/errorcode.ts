@@ -5,4 +5,6 @@ export enum ErrorCode {
     EXIST_ACCOUNT = 1002,
     UN_EXIST_ACCOUNT = 1003,
     Unauthorized = 1402,
+    AUTH_Ok = 200,
+    AUTH_Failure = 402,
 }

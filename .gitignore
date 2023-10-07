@@ -36,6 +36,7 @@ lerna-debug.log*
 
 # local file
 package-lock.json
+pnpm-lock.yaml
 yarn.lock
 dist
 node_modules
