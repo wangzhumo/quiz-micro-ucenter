@@ -24,7 +24,7 @@ export class LoginService {
         const ret = await this.authService.HasAuthAccount({ identityType, identity }) // save to database
         if (ret.code === ErrorCode.EXIST_ACCOUNT) {
             // already exist
-            return StatusCheck.Code(ErrorCode.EXIST_ACCOUNT);
+            return StatusCheck.Code(ErrorCode.EXIST_ACCOUNT)
         } else if (ret.code === ErrorCode.UN_EXIST_ACCOUNT) {
             // save to database
             return await this.authService.AuthAccount({
@@ -34,7 +34,7 @@ export class LoginService {
                 credential,
             })
         } else {
-            return StatusCheck.Code(ErrorCode.Failure);
+            return StatusCheck.Code(ErrorCode.Failure)
         }
     }
 }

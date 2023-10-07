@@ -1,5 +1,5 @@
 import { AccountBaseInfo } from '../interfaces/ucenter.interface'
-import { Long } from "@grpc/proto-loader";
+import { Long } from '@grpc/proto-loader'
 
 export interface CreateBaseAccountReq {
     nick: string

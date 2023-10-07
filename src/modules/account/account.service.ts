@@ -29,7 +29,7 @@ export class AccountService {
         // Get one AccountBaseInfo
         return this.prisma.accountBaseInfo.findUnique({
             where: {
-                uid: uid
+                uid: uid,
             },
         })
     }

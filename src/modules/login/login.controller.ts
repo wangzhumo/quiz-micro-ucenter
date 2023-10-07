@@ -45,7 +45,7 @@ export class LoginController {
      */
     @GrpcMethod('UCenterService', 'AuthSignIn')
     async AuthSignIn(params: AuthSignInReq): Promise<AuthSignInResp> {
-        console.log("AuthSignIn", params)
+        console.log('AuthSignIn', params)
         return StatusCheck.Code(ErrorCode.AUTH_Ok)
     }
 
@@ -56,7 +56,7 @@ export class LoginController {
      */
     @GrpcMethod('UCenterService', 'AuthSignUp')
     async AuthSignUp(params: AuthSignUpReq): Promise<AuthSignUpResp> {
-        console.log("AuthSignUp", params)
+        console.log('AuthSignUp', params)
         return StatusCheck.Code(ErrorCode.AUTH_Failure)
     }
 }

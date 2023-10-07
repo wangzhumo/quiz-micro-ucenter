@@ -1,10 +1,10 @@
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { join } from 'path'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import { AllExceptionFilter } from "./filters/all-exception.filter";
-import { Logger } from "@nestjs/common";
+import { AllExceptionFilter } from './filters/all-exception.filter'
+import { Logger } from '@nestjs/common'
 
 async function bootstrap() {
     const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
@@ -24,7 +24,7 @@ async function bootstrap() {
 
     // add Filter
     const logger = new Logger()
-    app.useGlobalFilters(new AllExceptionFilter(logger,httpAdapter))
+    app.useGlobalFilters(new AllExceptionFilter(logger, httpAdapter))
     await app.listen()
 }
 
