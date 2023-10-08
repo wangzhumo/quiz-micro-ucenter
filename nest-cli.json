@@ -5,7 +5,11 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      "**/*.proto"
+      "**/*.proto",
+      {
+        "include": "../config/*.yaml",
+        "outDir": "./dist/config"
+      }
     ]
   },
   "watchAssets": true

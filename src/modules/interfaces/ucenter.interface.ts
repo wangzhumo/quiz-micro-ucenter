@@ -1,11 +1,16 @@
+import { Long } from '@grpc/proto-loader'
+
 export interface AccountAuthInfo {
-    uid: number
-    token: string
-    tokenExpire: number
+    uid: Long
+    identityType: number
+    identity: string
+    username?: string
+    payload?: string
+    avatarUrl?: string
 }
 
 export interface AccountBaseInfo {
-    uid: number
+    uid: Long
     avatar: string
     nick: string
     status: number
@@ -15,13 +20,16 @@ export interface AccountBaseInfo {
 }
 
 export interface AccountInfo {
-    uid: number
+    uid: Long
     avatar: string
     nick: string
     status: number
     region: string
     lastAt: number
     createdAt: number
-    token: string
-    tokenExpire: number
+    identityType: number
+    identity: string
+    username?: string
+    payload?: string
+    avatarUrl?: string
 }

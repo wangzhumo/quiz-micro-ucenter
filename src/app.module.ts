@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AccountModule } from './modules/account/account.module'
 import { AuthAccountModule } from './modules/authAccount/auth.module'
 import { LoginModule } from './modules/login/login.module'
@@ -7,6 +7,7 @@ import { WinstonModule } from 'nest-winston'
 import * as winston from 'winston'
 import 'winston-daily-rotate-file'
 import Configuration from './configuration'
+import { ThrottlerModule } from '@nestjs/throttler'
 
 @Module({
     imports: [
@@ -30,6 +31,16 @@ import Configuration from './configuration'
                         winston.format.json(),
                     ),
                 }),
+            ],
+        }),
+        ThrottlerModule.forRootAsync({
+            inject: [ConfigService],
+            imports: [ConfigModule],
+            useFactory: (config: ConfigService) => [
+                {
+                    ttl: config.get('throttler.ttl'),
+                    limit: config.get('throttler.limit'),
+                },
             ],
         }),
         AccountModule,

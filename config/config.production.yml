@@ -19,3 +19,8 @@ prisma:
 protobuf:
   package: ucenter
   url: "0.0.0.0:8000"
+
+# throttler
+throttler:
+  ttl: 10000
+  limit: 10

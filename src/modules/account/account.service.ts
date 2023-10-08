@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { idgenerator } from '../../database/idgenerator'
+import { idGenerator } from '../../database/idgenerator'
 import { ColorAvatar } from '../../common/coloravatar'
 import { PrismaService } from '../../database/prisma.service'
 
@@ -8,13 +8,12 @@ export class AccountService {
     constructor(private readonly prisma: PrismaService) {}
 
     async CreateAccount(nick?: string, region?: string) {
-        const uid = idgenerator.nextId()
-        const uidNumber = Number(uid)
-        const avatarCode = ColorAvatar.color(uid)
+        const uid = idGenerator.nextId()
+        const avatarCode = ColorAvatar.color(String(uid))
         const currentTime = new Date().toISOString()
         return this.prisma.accountBaseInfo.create({
             data: {
-                uid: uidNumber,
+                uid: uid,
                 avatar: avatarCode,
                 nick: nick,
                 region: region ?? 'Global',
@@ -25,7 +24,7 @@ export class AccountService {
         })
     }
 
-    async findBaseAccount(uid: number) {
+    async findBaseAccount(uid: bigint) {
         // Get one AccountBaseInfo
         return this.prisma.accountBaseInfo.findUnique({
             where: {

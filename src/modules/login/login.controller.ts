@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common'
+import { Controller, Inject, Logger } from '@nestjs/common'
 import { LoginService } from './login.service'
 import { GrpcMethod } from '@nestjs/microservices'
 import {
@@ -8,16 +8,22 @@ import {
     AuthSignUpResp,
     LoginAuthReq,
     LoginAuthResp,
-    RegisterReq,
     RegisterResp,
 } from './login.interface'
-import { StatusCheck } from '../../common/status'
-import { ErrorCode } from '../../common/errorcode'
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston'
 
 @Controller()
 export class LoginController {
-    constructor(private readonly loginService: LoginService) {}
+    constructor(
+        private readonly loginService: LoginService,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    ) {}
 
+    /**
+     * Auto Auth
+     * @param params
+     * @constructor
+     */
     @GrpcMethod('UCenterService', 'LoginAuth')
     async LoginAuth(params: LoginAuthReq): Promise<LoginAuthResp> {
         const { identityType, identity, credential } = params
@@ -26,37 +32,29 @@ export class LoginController {
     }
 
     /**
-     * register new account
-     * @constructor
-     * @param params
-     */
-    @GrpcMethod('UCenterService', 'Register')
-    async Register(params: RegisterReq): Promise<RegisterResp> {
-        const { nick, identityType, identity, credential } = params
-        const ret = await this.loginService.registerAccount(nick, identityType, identity, credential)
-        console.log('Register controller', ret)
-        return ret
-    }
-
-    /**
-     * 登录时验证
+     * login in account
      * @param params
      * @constructor
      */
     @GrpcMethod('UCenterService', 'AuthSignIn')
     async AuthSignIn(params: AuthSignInReq): Promise<AuthSignInResp> {
         console.log('AuthSignIn', params)
-        return StatusCheck.Code(ErrorCode.AUTH_Ok)
+        const { identityType, identity, credential } = params
+        const ret = await this.loginService.LoginAccount(identityType, identity, credential)
+        console.log('Register controller:AuthSignIn', ret)
+        return ret
     }
 
     /**
-     * 创建时生成
-     * @param params
+     * register new account
      * @constructor
+     * @param params
      */
     @GrpcMethod('UCenterService', 'AuthSignUp')
     async AuthSignUp(params: AuthSignUpReq): Promise<AuthSignUpResp> {
-        console.log('AuthSignUp', params)
-        return StatusCheck.Code(ErrorCode.AUTH_Failure)
+        const { nick, identityType, identity, credential } = params
+        const ret = await this.loginService.registerAccount(nick, identityType, identity, credential)
+        this.logger.log('Register controller:Register', ret)
+        return ret
     }
 }

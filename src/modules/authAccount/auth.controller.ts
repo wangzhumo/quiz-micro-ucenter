@@ -15,6 +15,6 @@ export class AuthAccountController {
 
     @GrpcMethod('UCenterService', 'CreateAuthAccount')
     async CreateAuthAccount(params: CreateAuthAccountReq): Promise<CreateAuthAccountResp> {
-        return this.authService.AuthAccount(params)
+        return this.authService.CreateAuthAccount(params)
     }
 }

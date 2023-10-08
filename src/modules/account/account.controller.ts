@@ -5,6 +5,7 @@ import { CreateBaseAccountReq, CreateBaseAccountResp, GetAccountReq, GetAccountR
 import { StatusCheck } from '../../common/status'
 import { ErrorCode } from '../../common/errorcode'
 import { TimeFormat } from '../../common/timeformat'
+import { Long } from '@grpc/proto-loader'
 
 @Controller()
 export class AccountController {
@@ -13,9 +14,10 @@ export class AccountController {
     @GrpcMethod('UCenterService', 'CreateBaseAccount')
     async CreateBaseAccount(params: CreateBaseAccountReq): Promise<CreateBaseAccountResp> {
         const user = await this.accountService.CreateAccount(params.nick, null)
+        const uidBigInt = BigInt(user.uid).toString()
         return {
             data: {
-                uid: user.uid,
+                uid: Long.fromString(uidBigInt),
                 nick: user.nick,
                 avatar: user.avatar,
                 status: user.status,
@@ -30,11 +32,12 @@ export class AccountController {
 
     @GrpcMethod('UCenterService', 'GetAccount')
     async GetAccount(params: GetAccountReq): Promise<GetAccountResp> {
-        const user = await this.accountService.findBaseAccount(params.uid.toNumber())
+        const uidBigInt = BigInt(params.uid.toString())
+        const user = await this.accountService.findBaseAccount(uidBigInt)
         if (user) {
             return {
                 data: {
-                    uid: user.uid,
+                    uid: Long.fromString(uidBigInt.toString()),
                     nick: user.nick,
                     avatar: user.avatar,
                     status: user.status,

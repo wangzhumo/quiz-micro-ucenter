@@ -28,7 +28,6 @@ export class AllExceptionFilter implements ExceptionFilter {
             exceptioin: exception['name'],
             error: exception['response'] || 'Internal Server Error',
         }
-
         this.logger.error('[ucenter]', responseBody)
         httpAdapter.reply(response, responseBody, httpStatus)
     }

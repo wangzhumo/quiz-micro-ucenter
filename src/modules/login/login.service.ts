@@ -19,6 +19,20 @@ export class LoginService {
         return StatusCheck.Error(user.data)
     }
 
+    async LoginAccount(identityType: number, identity: string, credential: string) {
+        const userRet = await this.authService.AuthAccount({
+            identityType,
+            identity,
+            credential,
+        })
+
+        if (userRet && userRet.code === ErrorCode.Ok) {
+            // check base info
+            return userRet
+        }
+        return StatusCheck.Code(ErrorCode.Login_Failure)
+    }
+
     async registerAccount(nick: string, identityType: number, identity: string, credential: string) {
         // check account exist
         const ret = await this.authService.HasAuthAccount({ identityType, identity }) // save to database
@@ -27,7 +41,7 @@ export class LoginService {
             return StatusCheck.Code(ErrorCode.EXIST_ACCOUNT)
         } else if (ret.code === ErrorCode.UN_EXIST_ACCOUNT) {
             // save to database
-            return await this.authService.AuthAccount({
+            return await this.authService.CreateAuthAccount({
                 nick,
                 identityType,
                 identity,
