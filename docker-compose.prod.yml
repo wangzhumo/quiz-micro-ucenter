@@ -1,0 +1,58 @@
+# Use postgres/example user/password credentials
+version: '3.8'
+
+services:
+  ucenter:
+    container_name: ucenter
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+    depends_on:
+      - postgresql
+
+  postgresql:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '5432:5432'
+    volumes:
+      - nest-postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7.2.1
+    volumes:
+      - /app/redis/datadir:/data
+      - /app/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - /app/redis/logs:/logs
+    command: redis-server --requirepass yourpass
+    ports:
+      - '6379:6379'
+
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongodbpasd
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
+
+volumes:
+  redis:
+    driver: local
+  nest-postgres:
+    name: nest-db
