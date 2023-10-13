@@ -2,9 +2,9 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 # env
-FROM node:18 As development
+FROM node:18-alpine As development
 LABEL authors="ease"
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+RUN npm install -g pnpm
 
 # workspace dir & source code
 WORKDIR /app
@@ -23,9 +23,9 @@ USER node
 ###################
 # BUILD FOR PRODUCTION
 ###################
-FROM node:18 As build
+FROM node:18-alpine As build
 LABEL authors="ease"
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+RUN npm install -g pnpm
 
 # workspace dir & source code
 WORKDIR /app
@@ -48,7 +48,6 @@ USER node
 ###################
 # PRODUCTION
 ###################
-
 FROM node:18-alpine As production
 LABEL authors="ease"
 

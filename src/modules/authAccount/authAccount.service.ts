@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { AccountService } from '../account/account.service'
 import { PrismaService } from '../../database/prisma.service'
 import { StatusCheck } from '../../common/status'
@@ -6,6 +6,8 @@ import { ErrorCode } from '../../common/errorcode'
 import { AccountInfo } from '../interfaces/ucenter.interface'
 import { TimeFormat } from '../../common/timeformat'
 import { Long } from '@grpc/proto-loader'
+import { IdentityType } from '../../database/identityType'
+import * as argon from 'argon2'
 
 @Injectable()
 export class AuthAccountService {
@@ -31,14 +33,22 @@ export class AuthAccountService {
     async AuthAccount(params: any) {
         const { identityType, identity, credential } = params
         try {
+            // check user
             const authRet = await this.prisma.accountAuthInfo.findUnique({
                 where: {
-                    identityType: identityType,
                     identity: identity,
-                    credential: credential,
                 },
             })
             if (authRet) {
+                // verify credential
+                let isCredentialValid = true
+                if (authRet.identityType === IdentityType.EMAIL) {
+                    isCredentialValid = await argon.verify(authRet.credential, credential)
+                }
+                if (!isCredentialValid) {
+                    const authException = new UnauthorizedException('password verify error.')
+                    return StatusCheck.Code(ErrorCode.Credential_Error, null, authException.message)
+                }
                 const userInfo = await this.prisma.accountBaseInfo.findUnique({
                     where: {
                         uid: authRet.uid,
@@ -56,11 +66,13 @@ export class AuthAccountService {
                     identityType: authRet.identityType,
                     identity: authRet.identity,
                 } as AccountInfo)
+            } else {
+                const authException = new ForbiddenException("Account hasn't exist.")
+                return StatusCheck.Code(ErrorCode.UN_EXIST_ACCOUNT, null, authException.message)
             }
         } catch (error) {
             return StatusCheck.Code(ErrorCode.Login_Failure)
         }
-        return StatusCheck.Code(ErrorCode.Login_Failure)
     }
 
     async CreateAuthAccount(params: any) {
@@ -80,11 +92,16 @@ export class AuthAccountService {
         const account = await this.accountService.CreateAccount(nick, null)
         // create authAccount token
         try {
+            // argon2 encode password when use email & password
+            let credentialEncode = credential
+            if (identityType === IdentityType.EMAIL) {
+                credentialEncode = await argon.hash(credentialEncode)
+            }
             const newAuthInfo = await this.prisma.accountAuthInfo.create({
                 data: {
                     identityType: identityType,
                     identity: identity,
-                    credential: credential,
+                    credential: credentialEncode,
                     uid: account.uid,
                 },
             })

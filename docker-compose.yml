@@ -12,11 +12,12 @@ services:
     env_file:
       - .env
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
     depends_on:
       - postgresql
+    network_mode: "host"
 
   postgresql:
     image: postgres
@@ -30,9 +31,8 @@ services:
       - '5432:5432'
     volumes:
       - nest-postgres:/var/lib/postgresql/data
+    network_mode: "host"
 
 volumes:
-  redis:
-    driver: local
   nest-postgres:
     name: ucenter-postgres
