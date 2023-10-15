@@ -7,8 +7,8 @@ import { PrismaService } from '../../database/prisma.service'
 export class AccountService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async CreateAccount(nick?: string, region?: string) {
-        const uid = idGenerator.nextId()
+    async CreateAccount(nick?: string, region?: string, uidValue?: string) {
+        const uid = uidValue ? BigInt(uidValue).valueOf() : idGenerator.nextId()
         const avatarCode = ColorAvatar.color(String(uid))
         const currentTime = new Date().toISOString()
         return this.prisma.accountBaseInfo.create({

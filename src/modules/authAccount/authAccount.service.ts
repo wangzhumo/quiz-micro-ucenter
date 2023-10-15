@@ -8,6 +8,7 @@ import { TimeFormat } from '../../common/timeformat'
 import { Long } from '@grpc/proto-loader'
 import { IdentityType } from '../../database/identityType'
 import * as argon from 'argon2'
+import { idGenerator } from "../../database/idgenerator";
 
 @Injectable()
 export class AuthAccountService {
@@ -89,7 +90,8 @@ export class AuthAccountService {
         }
 
         // create new base account
-        const account = await this.accountService.CreateAccount(nick, null)
+        const uidStrValue = idGenerator.nextId().toString()
+        const account = await this.accountService.CreateAccount(nick, null, uidStrValue)
         // create authAccount token
         try {
             // argon2 encode password when use email & password
@@ -111,11 +113,11 @@ export class AuthAccountService {
                 uid: Long.fromString(uidBigInt),
                 createdAt: TimeFormat.getSTime(account.createdAt),
                 lastAt: TimeFormat.getSTime(account.lastAt),
-                identityType: auth.data.identityType,
-                identity: auth.data.identity,
-                username: auth.data.username,
-                avatarUrl: auth.data.avatarUrl,
-                payload: auth.data.payload,
+                identityType: newAuthInfo.identityType,
+                identity: newAuthInfo.identity,
+                username: newAuthInfo.username,
+                avatarUrl: newAuthInfo.avatarUrl,
+                payload: newAuthInfo.payload,
             } as AccountInfo)
         } catch (error) {
             return StatusCheck.Code(ErrorCode.Create_Account_Error)
